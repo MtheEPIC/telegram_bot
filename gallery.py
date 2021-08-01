@@ -1,7 +1,7 @@
 from telegram import ChatAction, Update, InlineKeyboardButton, InputMediaDocument
 from telegram.ext import CallbackContext
 
-from consts import GALLERY_MSG
+from consts import GALLERY_MSG, GUI, Gui
 from utiles import send_action, bt_menu, key_menu
 
 media_1 = InputMediaDocument(media=open('data/img1.jpg', 'rb'))
@@ -18,12 +18,42 @@ ALL_MEAT = [media_1, media_2, media_3, media_4, media_5, media_6]
 
 @send_action(ChatAction.TYPING)
 def gallery(update: Update, context: CallbackContext) -> None:
-    key_gallery(update, context)
+    if Gui == GUI.key:
+        key_gallery(update, context)
+    elif Gui == GUI.button:
+        bt_gallery(update, context)
+
+
+@send_action(ChatAction.UPLOAD_PHOTO)
+def gallery_all(update: Update, context: CallbackContext) -> None:
+    context.bot.send_media_group(chat_id=update.effective_chat.id, media=ALL_MEAT)
+    if Gui == GUI.key:
+        key_gallery_all(update, context)
+    elif Gui == GUI.button:
+        bt_gallery_all(update, context)
+
+
+@send_action(ChatAction.UPLOAD_PHOTO)
+def gallery_beef(update: Update, context: CallbackContext) -> None:
+    context.bot.send_media_group(chat_id=update.effective_chat.id, media=BEEF)
+    if Gui == GUI.key:
+        key_gallery_beef(update, context)
+    elif Gui == GUI.button:
+        bt_gallery_beef(update, context)
+
+
+@send_action(ChatAction.UPLOAD_PHOTO)
+def gallery_chicken(update: Update, context: CallbackContext) -> None:
+    context.bot.send_media_group(chat_id=update.effective_chat.id, media=CHICKEN)
+    if Gui == GUI.key:
+        key_gallery_chicken(update, context)
+    elif Gui == GUI.button:
+        bt_gallery_chicken(update, context)
 
 
 def key_gallery(update: Update, context: CallbackContext) -> None:
     keyboard_list = [['all types', 'beef', 'chicken'],
-                       ['help', 'order', 'stop']]
+                     ['help', 'order', 'stop']]
     key_menu(update, context, keyboard_list, GALLERY_MSG)
 
 
@@ -39,33 +69,45 @@ def bt_gallery(update: Update, context: CallbackContext) -> None:
     bt_menu(update, context, button_list, GALLERY_MSG, 2)
 
 
-@send_action(ChatAction.UPLOAD_PHOTO)
-def bt_gallery_chicken(update: Update, context: CallbackContext) -> None:
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=CHICKEN)
-    button_list = [
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    bt_menu(update, context, button_list, GALLERY_MSG, 1)
+def key_gallery_all(update: Update, context: CallbackContext) -> None:
+    keyboard_list = [['gallery', 'order'],
+                     ['help', 'stop']]
+    key_menu(update, context, keyboard_list, GALLERY_MSG)
 
 
-@send_action(ChatAction.UPLOAD_PHOTO)
-def bt_gallery_beef(update: Update, context: CallbackContext) -> None:
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=BEEF)
-    button_list = [
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    bt_menu(update, context, button_list, GALLERY_MSG, 1)
-
-
-@send_action(ChatAction.UPLOAD_PHOTO)
 def bt_gallery_all(update: Update, context: CallbackContext) -> None:
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=ALL_MEAT)
+    button_list = [
+        InlineKeyboardButton("help", callback_data='bt_help'),
+        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
+        InlineKeyboardButton("order", callback_data="bt_order"),
+        InlineKeyboardButton("stop", callback_data="bt_stop")
+    ]
+    bt_menu(update, context, button_list, GALLERY_MSG, 1)
+
+
+def key_gallery_beef(update: Update, context: CallbackContext) -> None:
+    keyboard_list = [['gallery', 'order'],
+                     ['help', 'stop']]
+    key_menu(update, context, keyboard_list, GALLERY_MSG)
+
+
+def bt_gallery_beef(update: Update, context: CallbackContext) -> None:
+    button_list = [
+        InlineKeyboardButton("help", callback_data='bt_help'),
+        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
+        InlineKeyboardButton("order", callback_data="bt_order"),
+        InlineKeyboardButton("stop", callback_data="bt_stop")
+    ]
+    bt_menu(update, context, button_list, GALLERY_MSG, 1)
+
+
+def key_gallery_chicken(update: Update, context: CallbackContext) -> None:
+    keyboard_list = [['gallery', 'order'],
+                     ['help', 'stop']]
+    key_menu(update, context, keyboard_list, GALLERY_MSG)
+
+
+def bt_gallery_chicken(update: Update, context: CallbackContext) -> None:
     button_list = [
         InlineKeyboardButton("help", callback_data='bt_help'),
         InlineKeyboardButton("gallery", callback_data="bt_gallery"),

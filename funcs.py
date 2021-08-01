@@ -1,30 +1,37 @@
-from typing import List
-
-from telegram import ChatAction, Update, InputMediaDocument, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import ChatAction, Update, InlineKeyboardButton, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 
-from consts import HELP_MSG, STOP_MSG, GALLERY_MSG, UNKNOWN_MSG, START_MSG
-from utiles import send_action, build_menu
-
-media_1 = InputMediaDocument(media=open('data/img1.jpg', 'rb'))
-media_2 = InputMediaDocument(media=open('data/img2.jpg', 'rb'))
-media_3 = InputMediaDocument(media=open('data/img3.jpg', 'rb'))
-media_4 = InputMediaDocument(media=open('data/img4.jpg', 'rb'))
-media_5 = InputMediaDocument(media=open('data/img5.jpg', 'rb'))
-media_6 = InputMediaDocument(media=open('data/img6.jpg', 'rb'))
-
-CHICKEN = [media_1, media_2]
-BEEF = [media_3, media_4, media_5, media_6]
-ALL_MEAT = [media_1, media_2, media_3, media_4, media_5, media_6]
+from consts import HELP_MSG, STOP_MSG, UNKNOWN_MSG, START_MSG, Gui, GUI
+from utiles import send_action, bt_menu, key_menu
 
 
 @send_action(ChatAction.TYPING)
-def bt_menu(update: Update, context: CallbackContext, button_list: List, n_cols: int = 2) -> InlineKeyboardMarkup:
-    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=n_cols))
-    return reply_markup
+def start(update: Update, context: CallbackContext) -> None:
+    if Gui == GUI.key:
+        key_start(update, context)
+    elif Gui == GUI.button:
+        bt_start(update, context)
 
 
 @send_action(ChatAction.TYPING)
+def stop(update: Update, context: CallbackContext) -> None:
+    key_stop(update, context)
+
+
+@send_action(ChatAction.TYPING)
+def help(update: Update, context: CallbackContext) -> None:
+    if Gui == GUI.key:
+        key_help(update, context)
+    elif Gui == GUI.button:
+        bt_help(update, context)
+
+
+def key_start(update: Update, context: CallbackContext) -> None:
+    keyboard_list = [['gallery', 'order'],
+                       ['help', 'stop']]
+    key_menu(update, context, keyboard_list, START_MSG)
+
+
 def bt_start(update: Update, context: CallbackContext) -> None:
     button_list = [
         InlineKeyboardButton("help", callback_data='bt_help'),
@@ -32,102 +39,42 @@ def bt_start(update: Update, context: CallbackContext) -> None:
         InlineKeyboardButton("order", callback_data="bt_order"),
         InlineKeyboardButton("stop", callback_data="bt_stop")
     ]
-    reply_markup = bt_menu(update, context, button_list)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=START_MSG, reply_markup=reply_markup)
+    bt_menu(update, context, button_list, START_MSG)
 
 
-@send_action(ChatAction.TYPING)
+def key_stop(update: Update, context: CallbackContext) -> None:
+    # keyboard_list = [['start']]
+    # key_menu(update, context, keyboard_list, STOP_MSG)
+    reply_markup = ReplyKeyboardRemove()
+    context.bot.send_message(chat_id=update.effective_chat.id, text=STOP_MSG, reply_markup=reply_markup)
+    bt_stop(update, context)
+
+
+def bt_stop(update: Update, context: CallbackContext) -> None:
+    button_list = [
+        InlineKeyboardButton("start", callback_data='bt_start')
+    ]
+    bt_menu(update, context, button_list, STOP_MSG, 1)
+
+
+def key_help(update: Update, context: CallbackContext) -> None:
+    keyboard_list = [['gallery', 'order'],
+                       ['stop']]
+    key_menu(update, context, keyboard_list, HELP_MSG)
+
+
 def bt_help(update: Update, context: CallbackContext) -> None:
     button_list = [
         InlineKeyboardButton("gallery", callback_data='bt_gallery'),
         InlineKeyboardButton("order", callback_data="bt_order"),
         InlineKeyboardButton("stop", callback_data="bt_stop")
     ]
-    reply_markup = bt_menu(update, context, button_list)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=HELP_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.TYPING)
-def bt_stop(update: Update, context: CallbackContext) -> None:
-    button_list = [
-        InlineKeyboardButton("start", callback_data='bt_start')
-    ]
-    reply_markup = bt_menu(update, context, button_list, 1)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=STOP_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.UPLOAD_PHOTO)
-def bt_gallery_chicken(update: Update, context: CallbackContext) -> None:
-    button_list = [
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    reply_markup = bt_menu(update, context, button_list, 1)
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=CHICKEN)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=GALLERY_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.UPLOAD_PHOTO)
-def bt_gallery_beef(update: Update, context: CallbackContext) -> None:
-    button_list = [
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    reply_markup = bt_menu(update, context, button_list, 1)
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=BEEF)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=GALLERY_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.UPLOAD_PHOTO)
-def bt_gallery_all(update: Update, context: CallbackContext) -> None:
-    button_list = [
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("gallery", callback_data="bt_gallery"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    reply_markup = bt_menu(update, context, button_list, 1)
-    context.bot.send_media_group(chat_id=update.effective_chat.id, media=ALL_MEAT)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=GALLERY_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.TYPING)
-def bt_gallery(update: Update, context: CallbackContext) -> None:
-    button_list = [
-        InlineKeyboardButton("all types", callback_data="gallery_all"),
-        InlineKeyboardButton("help", callback_data='bt_help'),
-        InlineKeyboardButton("beef", callback_data="gallery_beef"),
-        InlineKeyboardButton("order", callback_data="bt_order"),
-        InlineKeyboardButton("chicken", callback_data="gallery_chicken"),
-        InlineKeyboardButton("stop", callback_data="bt_stop")
-    ]
-    reply_markup = bt_menu(update, context, button_list, 2)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=GALLERY_MSG, reply_markup=reply_markup)
-
-
-@send_action(ChatAction.TYPING)
-def start(update: Update, context: CallbackContext) -> None:
-    bt_start(update, context)
-
-
-@send_action(ChatAction.TYPING)
-def help(update: Update, context: CallbackContext) -> None:
-    bt_help(update, context)
-
-
-@send_action(ChatAction.UPLOAD_PHOTO)
-def gallery(update: Update, context: CallbackContext) -> None:
-    bt_gallery(update, context)
+    bt_menu(update, context, button_list, HELP_MSG)
 
 
 # @send_action(ChatAction.TYPING)
 # def hello(update: Update, context: CallbackContext) -> None:
 #     update.message.reply_text(f'Hello {update.effective_user.first_name}')
-
 
 
 # @send_action(ChatAction.TYPING)

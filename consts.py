@@ -10,9 +10,9 @@ ORDER_CHICKEN_MSG = 'chicken types:'
 UNKNOWN_MSG = 'Sorry, I didn\'t understand that command\nuse /help to see what commands you can use'
 
 
-class Gui(enum.Enum):
+class GUI(enum.Enum):
     key = 0
     button = 1
 
 
-GUI = Gui.key
+Gui = GUI.key
