@@ -2,9 +2,17 @@ import os
 from functools import wraps
 from typing import List, Union
 
-from telegram import InlineKeyboardButton, ChatAction
+from telegram import InlineKeyboardButton, ChatAction, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
+from telegram.ext import CallbackContext
 
 KEY_LENGTH = 46
+
+
+def get_key() -> str:
+    key_file = os.open('key.txt', os.O_RDONLY)
+    key = os.read(key_file, KEY_LENGTH)
+    os.close(key_file)
+    return key.decode()
 
 
 def send_action(action: ChatAction):
@@ -35,8 +43,11 @@ def build_menu(
     return menu
 
 
-def get_key() -> str:
-    key_file = os.open('key.txt', os.O_RDONLY)
-    key = os.read(key_file, KEY_LENGTH)
-    os.close(key_file)
-    return key.decode()
+def bt_menu(update: Update, context: CallbackContext, button_list: List[InlineKeyboardButton], text: str = 'Custom Buttons', n_cols: int = 2) -> None:
+    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=n_cols))
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+
+
+def key_menu(update: Update, context: CallbackContext, keyboard_list: List[List[str]], text: str = 'Custom Keyboard') -> None:
+    reply_markup = ReplyKeyboardMarkup(keyboard_list)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
