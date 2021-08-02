@@ -8,6 +8,8 @@ ORDER_MSG = 'choose a category'
 ORDER_BEEF_MSG = 'beef types:'
 ORDER_CHICKEN_MSG = 'chicken types:'
 UNKNOWN_MSG = 'Sorry, I didn\'t understand that command\nuse /help to see what commands you can use'
+order_keyboard_list = [['+', '-', 'pay'],
+                       ['order', 'help', 'stop']]
 
 
 class GUI(enum.Enum):
