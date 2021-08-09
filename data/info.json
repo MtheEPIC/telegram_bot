@@ -1,0 +1,36 @@
+{
+  "key": "YOUR KEY",
+  "admins": [0],
+  "categories": [
+    {
+      "type": "beef",
+      "products": [
+        {
+          "type": "entrecote",
+          "price": 0,
+          "img": "data/img"
+        },
+        {
+          "type": "butcher cut",
+          "price": 0,
+          "img": "data/img"
+        }
+      ]
+    },
+    {
+      "type": "chicken",
+      "products": [
+        {
+          "type": "chicks",
+          "price": 0,
+          "img": "data/img"
+        },
+        {
+          "type": "breasts",
+          "price": 0,
+          "img": "data/img"
+        }
+      ]
+    }
+  ]
+}
